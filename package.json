@@ -1,0 +1,33 @@
+{
+  "name": "noisycharts",
+  "version": "1.0.0",
+  "description": "A tool for turning data into audio to make it more accessible ",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "start": "rollup -c -w"
+  },
+  "keywords": [
+    "audio",
+    "accessibility",
+    "data",
+    "a11y",
+    "charts",
+    "dataviz",
+    "graph",
+    "graphing"
+  ],
+  "author": "nickjevershed",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "rollup": "^2.79.1",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-serve": "^1.1.1"
+  }
+}
