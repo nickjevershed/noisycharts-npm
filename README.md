@@ -2,7 +2,7 @@
 
 This is the standalone javascript version of the noisycharts module. This has been released as an open source package so others can integrate it into their chart software to provide an audio alternative to visual charts that is accessible to people with a vision impairment.
 
-See a live demo of noisycharts [here](https://interactive.guim.co.uk/embed/superyacht-testing/index.html?key=1hxk6BFGjfsbTV8uRqlJWCvuiqZXUyqAgPrQXU08bVuk&location=docsdata), or check out the demo implementation in the /test folder.
+See a live demo of noisycharts in Guardian Australia's chart tool [here](https://interactive.guim.co.uk/embed/superyacht-testing/index.html?key=1hxk6BFGjfsbTV8uRqlJWCvuiqZXUyqAgPrQXU08bVuk&location=docsdata), or check out the demo implementation in the /test folder.
 
 ## Installation ##
 
