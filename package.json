@@ -1,7 +1,7 @@
 {
   "name": "noisycharts",
   "version": "1.0.0",
-  "description": "A tool for turning data into audio to make it more accessible ",
+  "description": "A tool for turning data into audio to make it more accessible",
   "main": "index.js",
   "directories": {
     "test": "test"
