@@ -20,7 +20,7 @@
     "graph",
     "graphing"
   ],
-  "author": "nickjevershed",
+  "author": "nickevershed",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.24.6",
