@@ -6,7 +6,13 @@ See a live demo of noisycharts [here](https://interactive.guim.co.uk/embed/super
 
 ## Installation ##
 
+With npm:
+
 `npm install noisycharts`
+
+Or load from a CDN in a script element for vanilla Javascript:
+
+`<script src="https://cdn.jsdelivr.net/npm/noisycharts/dist/index.js"></script>`
 
 ## Usage ##
 
