@@ -18,13 +18,9 @@ Or load from a CDN in a script element for vanilla Javascript:
 
 Create a new noisychart instance using the constructor:
 
-`let noisychart = new NoisyChart(settings)`
-
-Where settings is an object specifying your noisychart settings, eg:
-
 `let noisychart = new NoisyChart({settings:settings, data:data})`
 
-The default arguments for the NoisyChart object are:
+Where settings is an object specifying your noisychart settings. The default arguments for the NoisyChart object are:
 
 `{data, dataKeys=[], chartID=null, controlsID=controlsID, settings=default_settings, animationID=null, x=null, y=null, colors=default_colors}`
 
