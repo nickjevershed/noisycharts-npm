@@ -20,7 +20,7 @@ Create a new noisychart instance using the constructor:
 
 `let noisychart = new NoisyChart({settings:settings, data:data})`
 
-Then add noisychart control buttons or hotkey interaction to specific elements on your page:
+Then add noisychart control buttons a specific element on your page:
 
 `noisychart.addInteraction('audioControls')`
 
