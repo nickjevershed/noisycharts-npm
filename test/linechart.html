@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <!-- Load d3.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.js"></script>
+
+    <!-- Load noisycharts from a CDN if you want this code to work outside of this directory -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/noisycharts/dist/index.js"></script> -->
+
+    <!-- OR Load noisycharts from the local file for testing -->
+    <script src="index.js"></script>
+
+    <!-- OR if you want to use the /dist version for some reason -->
+    <!-- <script src="../dist/index.js"></script> -->
+
+</head>
+
+<body>
+    <div id="chartWrapper">
+        <h2>The rise of SUVs</h2>
+
+        <!-- Create a div where the controls will go -->
+        <div id="audioControls"></div>
+
+        <!-- Create a div where the graph will go -->
+        <div id="chart"></div>
+    </div>    
+</body> 
+
+<script>
+
+// set the dimensions and margins of the graph
+
+const margin = {top: 10, right: 20, bottom: 20, left: 20}
+const width = 620 - margin.left - margin.right
+const height = 400 - margin.top - margin.bottom
+
+// append the svg object to the body of the page
+
+const svg = d3.select("#chart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`)
+    .attr("id", "features")
+
+//Read the data
+
+d3.csv("car-data.csv").then( function(data) {
+        
+    // The column names
+
+    let dataKeys = Object.keys(data[0])
+
+    // xVar will be 'year' but this is a data agnostic approach 
+
+    let xVar = dataKeys[0]
+
+    // Remove 'year' so we can use the array for drawing lines, but the array will be ['Passenger', 'Light commercial', 'SUV']
+
+    dataKeys = dataKeys.slice(1)
+
+    console.log(dataKeys)
+    
+    // Set up a time parser
+
+    let parseYear = d3.timeParse("%Y-%m-%d")
+
+    // Chuck all the numbers in an array for scale purposes
+
+    let allValues = []
+
+    // Loop through the data and parse the date strings into datetime objects, and convert the number strings to actual numbers
+
+    data.forEach((d) => {
+
+        d[xVar] = parseYear(d[xVar])
+
+        dataKeys.forEach((key) => {
+            d[key] = +d[key];
+            allValues.push(d[key])
+        })
+    })
+
+    console.log("data",data)
+
+    // An object to store data for each line
+
+    let lineData = []
+
+    // Our data is 'wide', which is fine, but we will make it a nested array for d3 purposes. Or you could keep it wide and instead make lineData an object,
+    // then loop through dataKeys to draw each line separately.
+    // Anyways, this makes it nested
+
+    dataKeys.forEach((key) => {
+
+        lineData.push(data.map((d) => { 
+                return {[xVar]: d[xVar], "value": d[key], "name":key}
+            }
+        ))
+    })
+
+    console.log("lineData",lineData)
+
+    // Add X axis 
+
+    const x = d3.scaleTime()
+    .domain(d3.extent(data, function(d) { return d[xVar]; }))
+    .range([ 0, width ])
+
+    svg.append("g")
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x).ticks(5))
+
+    // Add Y axis
+
+    const y = d3.scaleLinear()
+    .domain([0, d3.max(allValues)])
+    .range([ height, 0 ])
+
+    svg.append("g")
+    .call(d3.axisLeft(y))
+
+    // color palette
+    const color = d3.scaleOrdinal(d3.schemeTableau10)
+
+    // d3 line generator
+
+    const line = d3.line()
+        .x(d => x(d[xVar]))
+        .y(d => y(d.value))
+
+    // Draw the lines
+
+    svg.selectAll(".line")
+        .data(lineData)
+        .join("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return color(d[0].name) })
+        .attr("stroke-width", 1.5)
+        .attr('d', line)
+
+
+    // The settings object for noisycharts, honestly can't remember what from this is required, I need to look into it
+
+    let settings = {
+        "xColumn":"year",
+        "xFormat": {
+            "date": true,
+            "string": null,
+            "number": null,
+            "status": "",
+            "type": "date"
+        }
+    }
+
+    // Initialize the NoisyCharts object
+
+    let noisychart = new NoisyChart({
+        data:data,
+        settings:settings, 
+        chartID:'chart', 
+        controlsID:'audioControls', 
+        animation:true,
+        colors:color,
+        x:x, 
+        y:y
+        })
+    
+    // Give it the original wide data object, not the reformatted one for the linechart
+
+    // noisychart.setupSonicData(data)
+
+    // Make the controls
+
+    noisychart.addInteraction('audioControls')    
+})
+
+</script>

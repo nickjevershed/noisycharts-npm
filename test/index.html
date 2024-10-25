@@ -3,63 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My NPM Package Test</title>
+  <title>Noisychart tests</title>
 </head>
 <body>
-  <h1>Noisycharts test</h1>
-  <button onclick="makeNoise()">make noise</button>
-  <div id="audioControls"></div>
-  <script src="index.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-dsv@3"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-fetch@3"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-time@3"></script> 
-  <script src="https://cdn.jsdelivr.net/npm/d3-time-format@4"></script>
-
-  <script>
+  <h1>Noisycharts tests</h1>
     
-    let settings = {
-          "xColumn":"year",
-          "xFormat": {
-            "date": true,
-            "string": null,
-            "number": null,
-            "status": "",
-            "type": "date"
-          }
-        }
+    <ul>
+        <li><a href="audio.html">Audio only</a></li>
+        <li><a href="linechart.html">Simple line chart</a></li>
+    </ul>
 
-    let data = null    
-
-    function makeNoise() {
-      d3.csv("global_temp_anomaly.csv")
-      .then(function(result) {
-        const dateParse = d3.timeParse("%Y");
-        data = result
-        
-        data.forEach(d => {
-          d.year = dateParse(d.year)
-          d['Temperature anomaly'] = +d['Temperature anomaly']
-        });
-
-        
-       
-        makeAudioChart(data, settings)
-        }
-      )
-      
-    }
-
-
-  
-    
-    function makeAudioChart(data,settings) {
-      let noisychart = new NoisyCharts(settings)
-      noisychart.setupSonicData(data)
-      noisychart.addInteraction('audioControls')
-
-    }
-
-  </script>
 </body>
 </html>

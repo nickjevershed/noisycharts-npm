@@ -2,9 +2,10 @@
 // import notes from './notes.json';
 
 import * as Tone from "tone";
-import { scaleLinear } from "d3-scale";
+import { scaleLinear, scaleOrdinal } from "d3-scale";
 import { select } from 'd3-selection';
-import { numberFormatSpeech, getBrowser, yearText, analyseTime, checkNull, xvarFormatSpeech } from "./utils.js";
+import { transition } from 'd3-transition';
+import { numberFormatSpeech, getBrowser, analyseTime, checkNull, xvarFormatSpeech } from "./utils.js";
 
 const dateMap = {
   "%Y":"Year",
@@ -137,6 +138,8 @@ function getDuration(dataLength) {
 
 const timer = ms => new Promise(res => setTimeout(res, ms))
 
+// settings are required for the chart to work, until we can add in the type detection code from Yacht Charter
+
 const default_settings = {
   "xColumn": null,
   "audioRendering": null,
@@ -152,6 +155,7 @@ const default_settings = {
   }
 }
 
+const default_colors = scaleOrdinal(['red'])
 
 /**
  * 
@@ -161,9 +165,16 @@ const default_settings = {
 
 class NoisyChart {
   
-  constructor(settings, animation=false, x=null, y=null, colors=null) {
+  constructor({data, dataKeys=[], chartID=null, controlsID=controlsID, settings=default_settings, animation=false, x=null, y=null, colors=default_colors }) {
+
+      console.log(settings)
+
       this.settings = settings
       this.animation = animation
+      this.chartID = chartID
+      this.controlsID = controlsID
+      this.data = data
+      this.synthLoaded = false
       this.x = x
       this.y = y
       this.colors = colors
@@ -189,7 +200,8 @@ class NoisyChart {
       this.furniturePaused = false
       this.usedCursor = false
       this.audioRendering = 'discrete'
-      this.resolveExternal
+      this.keys = dataKeys
+      this.interactionAdded = false
 
       let xBand = checkNull(this.x, 'bandwidth')
 
@@ -206,6 +218,7 @@ class NoisyChart {
       this.xBand = xBand
       this.yBand = yBand
 
+
       // console.log("xBand", xBand, "yBand", yBand)
   }
 
@@ -214,7 +227,7 @@ class NoisyChart {
     // console.log("settings",settings)
     let synthType = instrumentSettings.Synth
     let synthPreset = instrumentSettings.Presets
-    console.log("Tone", Tone)
+    // console.log("Tone", Tone)
     let newSynth = new Tone[synthType](synthPreset).toDestination();
     this.synth = newSynth
     let clickSettings = instruments['Click']
@@ -294,7 +307,7 @@ class NoisyChart {
   }
 
   setupSonicData(data, keys = [], exclude = []) {
-    
+    console.log("Setting up data and synth")
     let self = this
     self.note = getDuration(data.length)
     
@@ -411,12 +424,13 @@ class NoisyChart {
         range = range.reverse()
       }
     }
-    console.log(scaleLinear())
+    // console.log(scaleLinear())
     // console.log("range", range, "domain", self.domainY)
     self.scale = scaleLinear()
       .domain(self.domainY)
       .range(range)
 
+    self.synthLoaded = true    
   }
 
  playAudio = (dataKey) => {
@@ -604,12 +618,16 @@ class NoisyChart {
 }
 
   async playPause() { 
+    let self = this
+    if (!self.synthLoaded) {
+          self.setupSonicData(self.data, self.keys)
+    }
 
     // This needs to be here to make Safari work because of its strict autoplay policies
 
     Tone.context.resume()
 
-    let self = this
+    
     console.log("isPlaying", self.isPlaying, "inProgress", self.inProgress, "usedCursor", self.usedCursor, "furniturePlayer", self.furniturePlaying, "furniturePaused", self.furniturePaused)
     
     // Audio has not played through, so start with the furniture
@@ -700,6 +718,9 @@ class NoisyChart {
   async moveCursor(direction) {
 
     let self = this
+    if (!self.synthLoaded) {
+      self.setupSonicData(self.data, self.keys)
+    }
     self.usedCursor = true
     self.isPlaying = false
     self.inProgress = true
@@ -752,6 +773,9 @@ class NoisyChart {
 
   moveSeries(direction) {
     let self = this
+    if (!self.synthLoaded) {
+      self.setupSonicData(self.data, self.keys)
+    }
     self.usedCursor = true
     self.isPlaying = false
     self.inProgress = true
@@ -803,82 +827,128 @@ class NoisyChart {
     self.playPause();
   }
 
-  addInteraction(buttonContainer, hotkeyElement) {
+  handleKeyPress = (e) => {
+    let self = this
+    
+    console.log(e.code)
+
+    // Check if synth stuff has been setup yet, if not set it up once
+
+    if (!self.synthLoaded) {
+      self.setupSonicData(self.data, self.keys)
+    }
+
+    if (e.code === "Space") {
+      this.playPause()
+    }
+
+    if (e.code === "KeyD") {
+      console.log("keyd")
+      self.moveCursor(1)
+    }
+
+    if (e.code === "KeyA") {
+      self.moveCursor(-1)
+    }
+
+    if (e.code === "KeyW") {
+      self.moveSeries(1)
+    }
+
+    if (e.code === "KeyS") {
+      self.moveSeries(-1)
+    }
+
+    if (e.code === "KeyR") {
+      self.restart()
+    }
+  }
+
+  // Adds the interactivity to the chart
+
+  addInteraction(buttonContainer=null) {
+
     let self = this
 
-    // Check if chartContainer was specified to add hotkeys
+   
 
-    if (hotkeyElement) {
-      let app = document.getElementById("hotkeyElement")
-      app.addEventListener('keypress', (e) => {
-        console.log(e.code)
-        if (e.code === "Space") {
-          this.playPause()
-        }
-  
-        if (e.code === "KeyD") {
-          console.log("keyd")
-          self.moveCursor(1)
-        }
-  
-        if (e.code === "KeyA") {
-          self.moveCursor(-1)
-        }
-  
-        if (e.code === "KeyW") {
-          self.moveSeries(1)
-        }
-  
-        if (e.code === "KeyS") {
-          self.moveSeries(-1)
-        }
-  
-        if (e.code === "KeyR") {
-          self.restart()
-        }
-      });
-    }
+    if (!self.interactionAdded) {
+
+      if (self.chartID) {
+        // Select the chart container
+
+        let chart = document.getElementById(self.chartID)
+
+        // Makes the chart focusable with tab or screenreader
+
+        chart.tabIndex = 0
+
+        // Loads Tone on a click so we don't get annoying audio API errors
+
+        chart.addEventListener('click', (e) => {
+          if (!self.synthLoaded) {
+            self.setupSonicData(self.data, self.keys)
+          }
+        })
+
+        // Set up the hotkey / keyboard shortcut listeners
+
+        chart.addEventListener('keypress', this.handleKeyPress)
+
+      }
+
+      // An array for all the control buttons we need to make
+
+      const buttons = [
+        {id:'play', text:"play/pause", function:() => self.playPause()},
+        {id:'restart', text:"restart", function:() => self.restart()},
+        {id:'datumNext', text: "cursor forward", function:() => self.moveCursor(1)},
+        {id:'datumPrevious', text: "cursor back", function:() => self.moveCursor(-1)},
+        {id:'seriesNext', text: "series forward", function:() => self.moveSeries(1)},
+        {id:'seriesBack', text: "series back", function:() => self.moveSeries(1)}
+      ]
+
+      // User has specific an ID for a container for the buttons, so add the buttons
+
+      if (buttonContainer) {
+
+        let container = document.getElementById(buttonContainer)
+
+        // Remove the old buttons, if there are any
+
+        container.innerHTML = ""
+
+        // Make the buttons
+
+        buttons.forEach((button) => {
+          let newButton = document.createElement('button');
+          newButton.textContent = button.text;
+          newButton.onclick = button.function;
+          newButton.id = button.id;
+          newButton.id = button.id;
+          container.appendChild(newButton);
+        });
+
+        // Add special interaction to the spacebar
+
+        let btn = document.getElementById("play");
     
+        btn.addEventListener('keyup', (e) => {
+    
+          if (e.code === "Space") {
+            e.preventDefault();
+          }
+    
+        })
+      }
 
-    function test() {
-      console.log("yep")
+    // Let noisycharts know we added the interactive stuff so we don't do it twice
+
+    self.interactionAdded = true;  
+
     }
-
-    let buttons = [
-      {id:'play', text:"play/pause", function:() => self.playPause()},
-      {id:'restart', text:"restart", function:() => self.restart()},
-      {id:'datumNext', text: "cursor forward", function:() => self.moveCursor(1)},
-      {id:'datumPrevious', text: "cursor back", function:() => self.moveCursor(-1)},
-      {id:'seriesNext', text: "series forward", function:() => self.moveSeries(1)},
-      {id:'seriesBack', text: "series back", function:() => self.moveSeries(1)}
-    ]
-
-    if (buttonContainer) {
-      let container = document.getElementById(buttonContainer);
-      container.innerHTML = ""
-     
-      buttons.forEach((button) => {
-        let newButton = document.createElement('button');
-        newButton.textContent = button.text;
-        newButton.onclick = button.function;
-        newButton.id = button.id;
-        newButton.id = button.id;
-        container.appendChild(newButton);
-    });
-      
-      let btn = document.getElementById("play");
-      btn.addEventListener('keyup', (e) => {
   
-        if (e.code === "Space") {
-          e.preventDefault();
-        }
-  
-      })
-    }
-
-  
-
-  }
+  }  
 
   animateCursor(key, i, len) {
 
@@ -898,7 +968,7 @@ class NoisyChart {
     select("#features")
         .append("circle")
         .attr("cy", y + self.yBand / 2)
-        .attr("fill", self.colors.get(key))
+        .attr("fill", self.colors(key))
         .attr("cx", x + self.xBand / 2)
         .attr("r", 0)
         .style("opacity", 1)
@@ -930,15 +1000,15 @@ class NoisyChart {
     select("#features")
         .append("circle")
         .attr("cy", self.y(y) + self.yBand / 2)
-        .attr("fill", self.colors.get(key))
+        .attr("fill", self.colors(key))
         .attr("cx", self.x(x) + self.xBand / 2)
         .attr("r", 0)
         .style("opacity", 1)
         .transition()
-        .duration(300)
-        .attr("r",40)
-        .style("opacity",0)
-        .remove()
+          .duration(300)
+          .attr("r",40)
+          .style("opacity",0)
+          .remove()
   
 
   }

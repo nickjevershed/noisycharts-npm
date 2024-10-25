@@ -1,8 +1,9 @@
 {
   "name": "noisycharts",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A tool for turning data into audio to make it more accessible",
   "main": "index.js",
+  "browser": "dist/index.js",
   "directories": {
     "test": "test"
   },
@@ -36,6 +37,7 @@
     "d3-scale": "^4.0.2",
     "d3-selection": "^3.0.0",
     "d3-time-format": "^4.1.0",
+    "d3-transition": "^3.0.1",
     "tone": "^15.0.4"
   }
 }
