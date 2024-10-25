@@ -20,7 +20,13 @@ Create a new noisychart instance using the constructor:
 
 `let noisychart = new NoisyChart({settings:settings, data:data})`
 
-Where settings is an object specifying your noisychart settings. The default arguments for the NoisyChart object are:
+Then add noisychart control buttons or hotkey interaction to specific elements on your page:
+
+`noisychart.addInteraction('audioControls')`
+
+## Settings ##
+
+Settings is an object specifying your noisychart settings. The default arguments for the NoisyChart object are:
 
 `{data, dataKeys=[], chartID=null, controlsID=controlsID, settings=default_settings, animationID=null, x=null, y=null, colors=default_colors}`
 
@@ -76,10 +82,6 @@ const default_settings = {
   }
 }
 ```
-
-Add noisychart control buttons or hotkey interaction to specific elements on your page:
-
-`noisychart.addInteraction('audioControls')`
 
 ## Development and testing ##
 
