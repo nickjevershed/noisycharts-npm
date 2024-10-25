@@ -143,7 +143,7 @@ d3.csv("car-data.csv").then( function(data) {
         .attr('d', line)
 
 
-    // The settings object for noisycharts, honestly can't remember what from this is required, I need to look into it
+    // The settings object for noisycharts, required until type detection is added from Yacht Charter
 
     let settings = {
         "xColumn":"year",
@@ -162,8 +162,8 @@ d3.csv("car-data.csv").then( function(data) {
         data:data,
         settings:settings, 
         chartID:'chart', 
-        controlsID:'audioControls', 
-        animation:true,
+        controlsID:'audioControls',
+        animationID:'features',
         colors:color,
         x:x, 
         y:y

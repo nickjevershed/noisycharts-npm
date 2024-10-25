@@ -33898,8 +33898,8 @@
         controlsID = _ref$controlsID === void 0 ? controlsID : _ref$controlsID,
         _ref$settings = _ref.settings,
         settings = _ref$settings === void 0 ? default_settings : _ref$settings,
-        _ref$animation = _ref.animation,
-        animation = _ref$animation === void 0 ? false : _ref$animation,
+        _ref$animationID = _ref.animationID,
+        animationID = _ref$animationID === void 0 ? null : _ref$animationID,
         _ref$x = _ref.x,
         x = _ref$x === void 0 ? null : _ref$x,
         _ref$y = _ref.y,
@@ -33951,7 +33951,7 @@
                           }
                           Transport.schedule(function () {
                             self.currentIndex = d.sonic_index;
-                            if (self.animation) {
+                            if (self.animationID) {
                               if (d[dataKey]) {
                                 self.animateCursor(dataKey, d.sonic_index, null);
                               }
@@ -33984,7 +33984,7 @@
                           _context.next = 14;
                           return self.speaker(d[self.xVar]);
                         case 14:
-                          if (self.animation) {
+                          if (self.animationID) {
                             self.animateCursor(dataKey, i, null);
                           }
                           _context.next = 17;
@@ -34094,7 +34094,7 @@
                     return self.speaker("The lowest value on the chart is ".concat(lowestYStr, ", and it sounds like "));
                   case 14:
                     _context3.sent;
-                    if (self.animation) {
+                    if (self.animationID) {
                       self.animateCircle(self.lowestVal[self.xVar], self.lowestVal.value, self.lowestVal.key);
                     }
                     _context3.next = 18;
@@ -34108,7 +34108,7 @@
                     return self.speaker("The highest value on the chart is ".concat(highestYStr, ", and it sounds like "));
                   case 23:
                     _context3.sent;
-                    if (self.animation) {
+                    if (self.animationID) {
                       self.animateCircle(self.highestVal[self.xVar], self.highestVal.value, self.highestVal.key);
                     }
                     _context3.next = 27;
@@ -34173,7 +34173,7 @@
       });
       console.log(settings);
       this.settings = settings;
-      this.animation = animation;
+      this.animationID = animationID;
       this.chartID = chartID;
       this.controlsID = controlsID;
       this.data = _data;
@@ -34582,7 +34582,7 @@
                 playCursorAudio = function _playCursorAudio() {
                   self.speaker(xvarFormatSpeech(currentX, self.timeSettings.suggestedFormat));
                   self.speaker(numberFormatSpeech(currentY));
-                  if (self.animation) {
+                  if (self.animationID) {
                     self.animateCursor(self.currentKey, self.currentIndex, null);
                   }
                   self.beep(self.scale(currentY));
@@ -34657,7 +34657,7 @@
         // console.log("New key", self.currentKey, "new key index", currentKeyIndex)
         self.speaker(self.currentKey);
         self.speaker(numberFormatSpeech(currentY));
-        if (self.animation) {
+        if (self.animationID) {
           self.animateCursor(self.currentKey, self.currentIndex, null);
         }
         self.beep(self.scale(currentY));
@@ -34798,7 +34798,7 @@
           y = self.y(data[i][self.xVar]);
           x = self.x(data[i][key]);
         }
-        select("#features").append("circle").attr("cy", y + self.yBand / 2).attr("fill", self.colors(key)).attr("cx", x + self.xBand / 2).attr("r", 0).style("opacity", 1).transition().duration(300).attr("r", 40).style("opacity", 0).remove();
+        select("#".concat(self.animationID)).append("circle").attr("cy", y + self.yBand / 2).attr("fill", self.colors(key)).attr("cx", x + self.xBand / 2).attr("r", 0).style("opacity", 1).transition().duration(300).attr("r", 40).style("opacity", 0).remove();
       }
     }, {
       key: "animateCircle",
@@ -34816,7 +34816,7 @@
           y = cx;
           x = cy;
         }
-        select("#features").append("circle").attr("cy", self.y(y) + self.yBand / 2).attr("fill", self.colors(key)).attr("cx", self.x(x) + self.xBand / 2).attr("r", 0).style("opacity", 1).transition().duration(300).attr("r", 40).style("opacity", 0).remove();
+        select("#".concat(self.animationID)).append("circle").attr("cy", self.y(y) + self.yBand / 2).attr("fill", self.colors(key)).attr("cx", self.x(x) + self.xBand / 2).attr("r", 0).style("opacity", 1).transition().duration(300).attr("r", 40).style("opacity", 0).remove();
       }
     }]);
   }();

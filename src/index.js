@@ -165,12 +165,12 @@ const default_colors = scaleOrdinal(['red'])
 
 class NoisyChart {
   
-  constructor({data, dataKeys=[], chartID=null, controlsID=controlsID, settings=default_settings, animation=false, x=null, y=null, colors=default_colors }) {
+  constructor({data, dataKeys=[], chartID=null, controlsID=controlsID, settings=default_settings, animationID=null, x=null, y=null, colors=default_colors}) {
 
       console.log(settings)
 
       this.settings = settings
-      this.animation = animation
+      this.animationID = animationID
       this.chartID = chartID
       this.controlsID = controlsID
       this.data = data
@@ -476,7 +476,7 @@ class NoisyChart {
 
             Tone.Transport.schedule(function(){
               self.currentIndex = d.sonic_index
-              if (self.animation) {
+              if (self.animationID) {
                 if (d[dataKey]) {
                   self.animateCursor(dataKey,d.sonic_index, null)
                 }
@@ -503,7 +503,7 @@ class NoisyChart {
             // console.log("categorical")
             
             await self.speaker(d[self.xVar])
-            if (self.animation) {
+            if (self.animationID) {
               self.animateCursor(dataKey,i, null)
             } 
            
@@ -586,7 +586,7 @@ class NoisyChart {
 
       self.furniturePlaying = true
       const text1 = await self.speaker(`The lowest value on the chart is ${lowestYStr}, and it sounds like `)
-      if (self.animation) {
+      if (self.animationID) {
         self.animateCircle(self.lowestVal[self.xVar],self.lowestVal.value, self.lowestVal.key)
       }
       
@@ -595,7 +595,7 @@ class NoisyChart {
       await timer(1200);
   
       const text2 = await self.speaker(`The highest value on the chart is ${highestYStr}, and it sounds like `)
-      if (self.animation) {
+      if (self.animationID) {
         self.animateCircle(self.highestVal[self.xVar],self.highestVal.value, self.highestVal.key)
       }
 
@@ -747,7 +747,7 @@ class NoisyChart {
     function playCursorAudio() {
       self.speaker(xvarFormatSpeech(currentX, self.timeSettings.suggestedFormat))
       self.speaker(numberFormatSpeech(currentY))
-      if (self.animation) {
+      if (self.animationID) {
         self.animateCursor(self.currentKey,self.currentIndex, null)
       }
       self.beep(self.scale(currentY))
@@ -805,7 +805,7 @@ class NoisyChart {
     // console.log("New key", self.currentKey, "new key index", currentKeyIndex)
     self.speaker(self.currentKey)
     self.speaker(numberFormatSpeech(currentY))
-    if (self.animation) {
+    if (self.animationID) {
       self.animateCursor(self.currentKey,self.currentIndex, null)
     }
     self.beep(self.scale(currentY))
@@ -965,7 +965,7 @@ class NoisyChart {
       x = self.x(data[i][key])
     }
     
-    select("#features")
+    select(`#${self.animationID}`)
         .append("circle")
         .attr("cy", y + self.yBand / 2)
         .attr("fill", self.colors(key))
@@ -978,7 +978,6 @@ class NoisyChart {
         .style("opacity",0)
         .remove()
   
-
   }
 
   animateCircle(cx, cy, key=null) {
@@ -997,7 +996,7 @@ class NoisyChart {
       x = cy
     }
 
-    select("#features")
+    select(`#${self.animationID}`)
         .append("circle")
         .attr("cy", self.y(y) + self.yBand / 2)
         .attr("fill", self.colors(key))
