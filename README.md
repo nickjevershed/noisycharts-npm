@@ -77,10 +77,6 @@ const default_settings = {
 }
 ```
 
-Load in your data so noisycharts can analyse it and set everything up:
-
-`noisychart.setupSonicData(data)`
-
 Add noisychart control buttons or hotkey interaction to specific elements on your page:
 
 `noisychart.addInteraction('audioControls')`
