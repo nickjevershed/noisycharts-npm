@@ -5,6 +5,7 @@ import * as Tone from "tone";
 import { scaleLinear, scaleOrdinal } from "d3-scale";
 import { select } from 'd3-selection';
 import { transition } from 'd3-transition';
+import { extent } from 'd3-array';
 import { numberFormatSpeech, getBrowser, analyseTime, checkNull, xvarFormatSpeech } from "./utils.js";
 
 const dateMap = {
@@ -345,7 +346,7 @@ class NoisyChart {
     
     self.interval = getInterval(self.settings, self.xVar, self.timeSettings)
     
-    // console.log("time settings", self.timeSettings)
+    console.log("time settings", self.timeSettings)
     // console.log("interval", self.interval)
 
     let allDataValues = []
@@ -410,8 +411,8 @@ class NoisyChart {
     // console.log("highestVal", self.highestVal)
     // console.log("lowestVal", self.lowestVal)
     let range = [130.81,523.25]
-    self.domainY = d3.extent(allDataValues)
-    self.domainX = d3.extent(data, d => d[self.xVar])
+    self.domainY = extent(allDataValues)
+    self.domainX = extent(data, d => d[self.xVar])
 
 
 
@@ -869,8 +870,6 @@ class NoisyChart {
   addInteraction(buttonContainer=null) {
 
     let self = this
-
-   
 
     if (!self.interactionAdded) {
 

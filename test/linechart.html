@@ -46,7 +46,8 @@ const svg = d3.select("#chart")
     .attr("transform", `translate(${margin.left},${margin.top})`)
     .attr("id", "features")
 
-//Read the data
+// Read the data
+// Use https://raw.githubusercontent.com/nickjevershed/noisycharts-npm/refs/heads/main/test/car-data.csv instead if you want this to work outside of this directory
 
 d3.csv("car-data.csv").then( function(data) {
         
